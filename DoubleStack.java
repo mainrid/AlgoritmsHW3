@@ -4,7 +4,18 @@ public class DoubleStack {
 	private Stack<Double> stack;
 
    public static void main (String[] argum) {
-      // TODO!!! Your tests here!
+      DoubleStack first= new DoubleStack();
+      first.push(3.5);
+      first.push(4.5);
+      
+      try {
+		DoubleStack firstClone= (DoubleStack)first.clone();
+		System.out.println(first.equals(firstClone));
+	} catch (CloneNotSupportedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+            
    }
 
    DoubleStack() {
@@ -13,7 +24,23 @@ public class DoubleStack {
 
    @Override
    public Object clone() throws CloneNotSupportedException {
-      return this; // TODO!!! Your code here!
+	   DoubleStack temporary = new DoubleStack();
+	   DoubleStack clone = new DoubleStack();
+	   
+	   int stackSize= this.stack.size();
+	   for (int i = 0; i < stackSize; i++) {
+		   double temp = this.stack.pop();
+		   temporary.push(temp);
+	   }
+	   for (int i = 0; i < stackSize; i++) {
+		   double temp = temporary.pop();
+		   clone.push(temp);	
+		   this.stack.push(temp);
+		   	
+	   }
+	   
+	   return clone;
+	   
    }
 
    public boolean stEmpty() {
@@ -33,16 +60,36 @@ public class DoubleStack {
    } // pop
 
    public void op (String s) {
-      // TODO!!!
+      double first = pop();
+      double second = pop();
+      
+      if(s.equals("+")){
+    	  push(second+first);
+      }else if(s.equals("-")){
+    	  push(second-first);
+      }else if(s.equals("*")){
+    	  push(second*first);
+      }else if(s.equals("/")){
+    	  push(second/first);
+      }
    }
   
    public double tos() {
-      return stack.peek(); // TODO!!! Your code here!
+      return stack.peek(); 
    }
 
    @Override
    public boolean equals (Object o) {
-      return true; // TODO!!! Your code here!
+	  if(o==null)
+		  return false;
+	  if(!(o instanceof DoubleStack)) 
+		  return false;
+	  
+	  DoubleStack other = (DoubleStack)o;
+	  if(this.stack.equals(other.stack))
+		  return true;
+	  
+      return false;
    }
 
    @Override
