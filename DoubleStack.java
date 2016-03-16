@@ -1,16 +1,15 @@
+import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.StringTokenizer;
-
-import javax.management.RuntimeErrorException;
 
 public class DoubleStack {
 	private Stack<Double> stack;
 
 	public static void main(String[] argum) {
-		DoubleStack first = new DoubleStack();
-		first.push(3.5);
+		DoubleStack first = new DoubleStack();		
+		first.push(3.5);		
 		first.push(4.5);
-
+		
 		try {
 			DoubleStack firstClone = (DoubleStack) first.clone();
 			System.out.println(first.equals(firstClone));
@@ -18,6 +17,8 @@ public class DoubleStack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		DoubleStack.interpret("12. 14. 14. -");
 
 	}
 
@@ -59,26 +60,43 @@ public class DoubleStack {
 	}
 
 	public double pop() {
-		return this.stack.pop();
+		try {
+			return this.stack.pop();
+		} catch (EmptyStackException e) {
+			throw new RuntimeException("pop() method called for empty stack");
+		}
 	} // pop
 
 	public void op(String s) {
-		double first = pop();
-		double second = pop();
+		int elementCounter=0;
+		try {			
+			double first = this.stack.pop();
+			elementCounter++;
+			double second = this.stack.pop();
 
-		if (s.equals("+")) {
-			push(second + first);
-		} else if (s.equals("-")) {
-			push(second - first);
-		} else if (s.equals("*")) {
-			push(second * first);
-		} else if (s.equals("/")) {
-			push(second / first);
+			if (s.equals("+")) {
+				push(second + first);
+			} else if (s.equals("-")) {
+				push(second - first);
+			} else if (s.equals("*")) {
+				push(second * first);
+			} else if (s.equals("/")) {
+				push(second / first);
+			} else {
+				throw new RuntimeException("method \"op\" called with incorrect argument - " + s + ", possible arguments: +,-,*,/");
+			}
+
+		} catch (EmptyStackException e) {
+			throw new RuntimeException("There is " + elementCounter + " elements in stack, should be at least two when calling \"op\" method");
 		}
 	}
 
 	public double tos() {
-		return stack.peek();
+		try {
+			return stack.peek();
+		} catch (EmptyStackException e) {
+			throw new RuntimeException("\"tos\" method called for empty stack");
+		}
 	}
 
 	@Override
@@ -104,7 +122,8 @@ public class DoubleStack {
 		StringBuffer stackData = new StringBuffer();
 
 		for (int i = 0; i < stack.size(); i++) {
-			stackData.append(stack.get(i).toString() + " ");
+			stackData.append(stack.get(i).toString());
+			stackData.append(" ");
 		}
 		return stackData.toString();
 
@@ -130,7 +149,7 @@ public class DoubleStack {
 					double v = Double.valueOf(next);
 					stack.push(v);
 				} catch (NumberFormatException e) {
-					throw new RuntimeException("Invalid symbols");
+					throw new RuntimeException("Method \"interpret\" argument " + pol + " is not in the correct format. " + next + " cannot be converted to double type. Correct method call example: DoubleStack.interpret(\"2. 15. -\")");
 				}
 
 			} else {
@@ -140,7 +159,7 @@ public class DoubleStack {
 		}
 		rpnValue = stack.pop();
 		if (!stack.stEmpty()) {
-			throw new RuntimeException("Some operands left in stack");
+			throw new RuntimeException("Method \"interpret\" argument " + pol + " has more than 2 convertable to double type numbers. Should be only 2 convertable to double type numbers. Correct method call example: DoubleStack.interpret(\"2. 15. -\") ");
 		}
 		return rpnValue;
 	}
